@@ -1,7 +1,15 @@
-GrundyGame = {7}
+GrundyGame = {}
 
 function GrundyGame:new(startStack)
    GrundyGame[1] = startStack 
+end
+
+function GrundyGame.NewGame( startStack)
+  while GrundyGame[2] ~= nil do
+    table.remove(GrundyGame)
+  end
+
+  GrundyGame[1] = startStack
 end
 
 function GrundyGame.CheckIfGameEnd()

@@ -1,3 +1,3 @@
-game = require("GrundyGame").new(7)
-
+game = require("GrundyGame")
+game.NewGame(7)
 game.StartSplitting(1)
