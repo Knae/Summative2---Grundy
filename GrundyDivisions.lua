@@ -4,7 +4,7 @@ function GrundyDivisions.PrintDivisions()
   local index = 0
   for val1, val2 in ipairs(GrundyDivisions) do
     index = index+1
-    print(index, ":", val2[1], "&", val2[2])    
+    print(index, ":", val2[1], "&", val2[2])
   end
   return index
 end

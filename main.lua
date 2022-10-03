@@ -7,29 +7,33 @@ print("Input the initial stack")
 local stackValue = io.read("*n")
 
 game.NewGame(stackValue)
-while(not game.CheckIfGameEnd()) do
+game:PrintStacks()
+while(not game:CheckIfGameEnd()) do
   print("========")
   if player1Turn then
     print("[Turn 1]")
   else
     print("[Turn 2]")
   end
-  print("========")
-
+  print("==========")
+  print("Game State")
+  game:PrintStacks()
+  print("==========")
+  
   if(aiPlayer and not player1Turn) then
-    game.AI_Easy()
+    if game:AI_Easy() then
+      player1Turn = not player1Turn
+    end
   else
-    game.PrintStacks()
-
     print("Input the stack split:")
     stackValue = io.read("*n")
 
-    if game.StartSplitting(stackValue) then
-     player1Turn = not player1Turn
+    if game:StartSplitting(stackValue) then
+      player1Turn = not player1Turn
     end
   end
 end
 
 print("Game has ended")
 print("Final state of stacts:")
-game.PrintStacks()
+game:PrintStacks()

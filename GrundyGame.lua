@@ -1,14 +1,11 @@
 GrundyGame = {}
 
-function GrundyGame:new(startStack)
-   GrundyGame[1] = startStack 
-end
-
 function GrundyGame.NewGame(startStack)
   while GrundyGame[2] ~= nil do
     table.remove(GrundyGame)
   end
   GrundyGame[1] = startStack
+  --print("1st value is:",GrundyGame[1])
 end
 
 function GrundyGame.CheckIfGameEnd()
@@ -22,18 +19,22 @@ function GrundyGame.CheckIfGameEnd()
   return gameEnd
 end
 
-function GrundyGame.StartSplitting( index )
+function GrundyGame:StartSplitting( index )
   local currentDivisions = require("GrundyDivisions")
   local valueToDivide = GrundyGame[index]
 
   if valueToDivide == nil then
     print("No value at that index")
     return false
+  else if valueToDivide <= 2 then
+      print("Stack cannot be splits")
+      return false
+    end
   end
 
   print("Splitting", valueToDivide )
-  currentDivisions:FindPossibleDivisions(valueToDivide)
-  currentDivisions:PrintDivisions()
+  currentDivisions.FindPossibleDivisions(valueToDivide)
+  currentDivisions.PrintDivisions()
 
   print("Input the number corresponding to how you want to split",valueToDivide)
   local chosenIndex = io.read("*n")
@@ -73,19 +74,24 @@ function GrundyGame.AI_Easy()
   
   print("AI chose stack no:", chosenStack)
   print("==============================")
-  currentDivisions:FindPossibleDivisions(valueToDivide)
-  print("AI had these possible options:")
-  print("==============================")
-  local maxDivisons = currentDivisions:PrintDivisions()
-
-  print("========= ")
-  local chosenIndex = math.random(maxDivisons)
-  print("AI chose:",chosenIndex)
+  if valueToDivide > 2 then
+    currentDivisions.FindPossibleDivisions(valueToDivide)
+    print("AI had these possible options:")
+    print("==============================")
+    local maxDivisons = currentDivisions:PrintDivisions()
   
-  GrundyGame[chosenStack] = currentDivisions[chosenIndex][2]
-  table.insert(GrundyGame,chosenStack,currentDivisions[chosenIndex][1])
-
-  currentDivisions.ClearTable()
-  return true
+    print("========= ")
+    local chosenIndex = math.random(maxDivisons)
+    print("AI chose:",chosenIndex)
+    
+    GrundyGame[chosenStack] = currentDivisions[chosenIndex][2]
+    table.insert(GrundyGame,chosenStack,currentDivisions[chosenIndex][1])
+    currentDivisions.ClearTable()
+    return true
+  else
+    print("AI chose invalid stack no:", chosenStack)
+    print("==============================")
+    return false
+  end
 end
 return GrundyGame
