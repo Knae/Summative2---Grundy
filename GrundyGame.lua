@@ -33,6 +33,9 @@ function GrundyGame:StartSplitting( index )
   end
 
   print("Splitting", valueToDivide )
+  print("=========================")
+  print("Possible split outcomes" )
+  print("=========================")
   currentDivisions.FindPossibleDivisions(valueToDivide)
   currentDivisions.PrintDivisions()
 
@@ -55,18 +58,22 @@ end
 
 function GrundyGame.PrintStacks()
   local stringToPrint = ""
+  local stringLabel = ""
   local index = 0
   print("Current Stacks:")
+
   for key,value in ipairs(GrundyGame) do
     index = index + 1
-    stringToPrint = stringToPrint .. "[" .. value .. "]"
+    stringToPrint = stringToPrint .. "[" .. index .. ": " .. value .. "],"
   end
+
   print(stringToPrint)
   return index
 end
 
 function GrundyGame.AI_Easy()
   print("AI(Easy) is thinking.....")
+  print("=========================")
   local maxIndex = GrundyGame.PrintStacks()
   local currentDivisions = require("GrundyDivisions")
   local chosenStack = math.random(maxIndex)
