@@ -1,17 +1,18 @@
+--module that manages the GrundyGame
 GrundyGame = {}
 
+--Sets up GrundyGame for a new session
 function GrundyGame.NewGame(startStack)
   while GrundyGame[2] ~= nil do
     table.remove(GrundyGame)
   end
   GrundyGame[1] = startStack
-  --print("1st value is:",GrundyGame[1])
 end
 
+--Checks all the stacks to see if the game can no longer
+--proceed and thus has ended
 function GrundyGame.CheckIfGameEnd()
-  --local gameEnd = true;
   for key,value in ipairs(GrundyGame) do
-    --print(value[1],value[2],value[3])
     if value > 2 then
       return false
     end
@@ -19,10 +20,14 @@ function GrundyGame.CheckIfGameEnd()
   return true
 end
 
+--Starts process of getting player input to decide how to split
+--the stack chosen by the player
 function GrundyGame:StartSplitting( index )
   local currentDivisions = require("Grundy_Divisions")
-  local valueToDivide = GrundyGame[index]
+  local chosenIndex = nil;
 
+  --Retrieves the value to be split and checks if it is valid
+  local valueToDivide = GrundyGame[index]
   if valueToDivide == nil then
     print("No value at that index")
     return false
@@ -31,60 +36,58 @@ function GrundyGame:StartSplitting( index )
       return false
     end
   end
-
   print("Splitting", valueToDivide )
   print("=========================")
   print("Possible split outcomes" )
   print("=========================")
+  --Determine the possible divisions using the Grundy_Divisions module
   currentDivisions:FindPossibleDivisions(valueToDivide)
   currentDivisions:PrintElements()
 
-  print("Input the number corresponding to how you want to split",valueToDivide)
-  local chosenIndex = io.read("*n")
-
+  --Get player input that corresponds to split they chosen
+  while chosenIndex == nil do
+    print("Input the number corresponding to how you want to split",valueToDivide)
+    chosenIndex = tonumber(io.read())
+    if not GrundyGame.CheckInput(chosenIndex, 0) then
+      chosenIndex = nil
+    end
+  end
   print("Chosen Index was ", chosenIndex)
-  
   if currentDivisions[chosenIndex] == nil then
     print("No data at that index")
     return false
   end
-  
+  --The stack is split by changing its value to the second value of the
+  --split that the player selected. Then a new value is inserted
+  --at the same position but this time using the first value of the split
   GrundyGame[index] = currentDivisions[chosenIndex][2]
   table.insert(GrundyGame,index,currentDivisions[chosenIndex][1])
 
+  --Sort the values for compatibility with GrundyAI_MinMax module
   GrundyGame:SortValues()
 
   currentDivisions:ClearTable()
   return true
 end
 
+--Sort the stacks by its value
 function GrundyGame:SortValues()
-  --GrundyGame.PrintStacks()
-
   local tempTable = {};
-
   for key,value in ipairs(GrundyGame) do
     table.insert(tempTable, value)
   end
-
-  table.sort(tempTable)
-
-  --local index = 0
+  table.sort(tempTable)  
   for key, value in ipairs(tempTable) do
-    -- index = index + 1
-    -- GrundyGame[index] = tempTable[index]
     GrundyGame[key] = value
   end
-
-  --GrundyGame.PrintStacks()
 end
 
+--Print the stacks
 function GrundyGame.PrintStacks()
   local stringToPrint = ""
   local size = 0
-
   for key,value in ipairs(GrundyGame) do
-    stringToPrint = stringToPrint .. "[Stack" .. key .. ": " .. value .. "],"
+    stringToPrint = stringToPrint .. "[Stack" .. key .. " : " .. value .. "],"
     size = key
   end
 
@@ -92,6 +95,9 @@ function GrundyGame.PrintStacks()
   return size
 end
 
+--Easy AI that makes decisions at random
+--Everytime it needs to make an input, it chooses a random number
+--repeats if the number is invalid (possibly because the stack can't be split)
 function GrundyGame.AI_Easy()
   print("AI(Easy) is thinking.....")
   print("=========================")
@@ -126,6 +132,9 @@ function GrundyGame.AI_Easy()
   end
 end
 
+--AI that creates a full decision tree at the start and makes decisions based on that
+--Uses the current set of stacks to determine which node it's currently and what decisions
+--it needs to make
 function GrundyGame.AI_InputSelection(_inStackChoice, _inDiviChoice)
   print("AI is thinking.....")
   print("===================")
@@ -145,6 +154,17 @@ function GrundyGame.AI_InputSelection(_inStackChoice, _inDiviChoice)
   GrundyGame:SortValues()
 
   currentDivisions:ClearTable()
+end
+
+--Check input
+function GrundyGame.CheckInput(_input, _limit)
+  if _input == nil or _input<1 or (_limit > 0 and _input > _limit) then
+    print("Invalid input")
+    print("")
+    print("")
+    return false
+  end
+  return true
 end
 
 return GrundyGame

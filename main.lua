@@ -1,3 +1,13 @@
+function CheckInput(_input, _limit)
+  if _input == nil or _input<1 or (_limit > 0 and _input > _limit) then
+    print("Invalid input")
+    print("")
+    print("")
+    return false
+  end
+  return true
+end
+
 math.randomseed(os.time())
 local game = require("GrundyGame")
 local player1Turn = true;
@@ -6,23 +16,38 @@ local selectedMode = nil
 local userInput = nil
 local aiModule = require("GrundyAI_MinMax")
 
-print("Select Mode:")
-print("1: 2 player hot-seat")
-print("2: vs Easy AI")
-print("3: vs Medium AI")
-print("4: vs Hard AI")
-selectedMode = io.read("*n")
+while selectedMode == nil do
+  print("Select Mode:")
+  print("1: 2 player hot-seat")
+  print("2: vs Easy AI")
+  print("3: vs Medium AI")
+  selectedMode = tonumber(io.read())
+  print(selectedMode)
+  if not CheckInput(selectedMode, 3) then
+    selectedMode = nil
+  end
+end
 
 if selectedMode == 1 then
   aiPlayer = false;
 else
   aiPlayer = true
-  --Switch AI difficulty here
 end
 
 userInput = nil
-print("Input the initial stack")
-userInput = io.read("*n")
+while userInput == nil do
+  print("Input the initial stack")
+  userInput = tonumber(io.read())
+  if not CheckInput(userInput, 0) then
+    userInput = nil
+  elseif userInput < 3 then
+    print("Stack is too small")
+    userInput = nil
+  elseif userInput > 18 then
+    print("Stack is too big")
+    userInput = nil
+  end
+end
 
 game.NewGame(userInput)
 game:PrintStacks()
@@ -41,7 +66,6 @@ while(not game:CheckIfGameEnd()) do
     else
       print("[Player 2]")
     end
-
   end
  
   if(aiPlayer and not player1Turn) then
@@ -58,9 +82,15 @@ while(not game:CheckIfGameEnd()) do
     game:PrintStacks()
     print("==========")
 
-    userInput = nil
-    print("Input the stack split:")
-    userInput = io.read("*n")
+  userInput = nil
+  while userInput == nil do
+    print("Input the stack to split")
+    userInput = tonumber(io.read())
+  
+    if not CheckInput(userInput, 0) then
+      userInput = nil
+    end
+  end
 
     if game:StartSplitting(userInput) then
       player1Turn = not player1Turn

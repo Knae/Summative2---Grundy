@@ -1,14 +1,16 @@
---local meta = {_index = GrundyAI_Node}
+--Module fore creating a Grundy specific tree node
 GrundyAI_Node = { }
 
+--returns the ref to the itself
 function GrundyAI_Node:new(elementRef)
-    --local node = { }
     elementRef = elementRef or {values = {}, value_Min = nil, value_Max = 0, isMIN = false, score = 0, linkedNodes = {}, selectionPairs = {} }
     setmetatable( elementRef, self)
     self.__index = self
     return elementRef
 end
 
+--Function to clear all the values and the nodes in the
+--linkedNodes
 function GrundyAI_Node:EmptyNodeRecord()
     while self.values[1] ~= nil do
         table.remove(self.values)
@@ -20,14 +22,14 @@ function GrundyAI_Node:EmptyNodeRecord()
 
     self.isMIN = false
     self.score = 0
-      --print("1st value is:",GrundyGame[1])
 end
 
+--Add a value( or a stack) in the node
 function GrundyAI_Node:AddValue( _inValue)
-
     table.insert(self.values, _inValue)
 end
 
+--Sort the values or stacks stored in this node
 function GrundyAI_Node:SortValues()
     local tempTable = {};
 
@@ -44,6 +46,10 @@ function GrundyAI_Node:SortValues()
     end
 end
 
+--Compare the values in the node with the given values. Returns false
+--if even one value is different. Otherwise it returns true.
+--e.g: {1,2,4} and {1,1,2} would return false because the 2nd value
+--in both sets are different
 function GrundyAI_Node:CompareWith( _inValues)
     for key, value in ipairs(_inValues) do
         if  _inValues[key] == nil or self.values[key] == nil then
@@ -57,6 +63,8 @@ function GrundyAI_Node:CompareWith( _inValues)
     return true
 end
 
+--Check all the values in the node to determine if it is a leaf node,
+--i.e. cannot be expanded further. If all values are 1 or 2, then it returns true
 function GrundyAI_Node:CheckIfLeafNode()
     for key, value in ipairs(self.values) do
         if value > 2 then
@@ -66,6 +74,8 @@ function GrundyAI_Node:CheckIfLeafNode()
     return true
 end
 
+--Updates the node's score by summing the scores of all the nodes in itself
+--linkedNodes table
 function GrundyAI_Node:UpdateScore()
     if self.linkedNodes[1] ~= nil then
         local nodeCumulativeScore = 0;
@@ -76,6 +86,7 @@ function GrundyAI_Node:UpdateScore()
     end
 end
 
+--Returns the node's score
 function GrundyAI_Node:GetScore()
     return self.score
 end
